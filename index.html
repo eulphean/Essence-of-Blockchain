@@ -1,8 +1,19 @@
 <!DOCTYPE html>
 <html>
+<style>    
+    #state {
+        height: 50px;
+        width: 50px;
+        background-color: red;
+        border-radius: 50%;
+        display: inline-block;
+    }
 
-<head>
-</head>
+    .blocks {
+        margin-top: 10px
+    }
+
+</style>
 <body>
     <h1>coinbase balance</h1>
     <div></div>
@@ -10,9 +21,22 @@
     <div></div>
     <div id="original"></div>
     <div id="current"></div>
-    <div id="diff"></div>
-    <div></div>
     <div id="blocks"></div>
+    <div id="totaldifficulty"></div>
+    <div></div>
+    <div>
+        <h1>Node</h1>
+        <div id="state"></div>
+        <div class="blocks">Blocks Mined: <span id="numBlocks"></span></div>
+    </div>
+    <div></div>
+    <div>
+        <h1>Last Block</h1>
+        <div id="number"></div>
+        <div id="hash"></div>
+        <div id="miner"></div>
+        <div id="difficulty"></div>
+    </div>
 </body>
 <script type="text/javascript" src="./node_modules/bignumber.js/bignumber.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>

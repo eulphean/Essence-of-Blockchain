@@ -10,7 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "bignumber.js": "git+https://github.com/frozeman/bignumber.js-nolookahead.git",
-    "web3": "^1.0.0-beta.34"
+    "web3": "^1.0.0-beta.34",
+    "web3admin": "^0.4.4"
   },
   "devDependencies": {
     "web3-utils": "^1.0.0-beta.34"

@@ -1,5 +1,11 @@
 var Web3 = require('web3');
+// const web3Admin = require('web3admin');
 var web3 = new Web3();
+
+// Extend the API and add admin functionality. 
+// web3Admin.extend(web3);
+
+// Set the localhost provider. 
 web3.setProvider(new web3.providers.HttpProvider());
 
 // Query initial values

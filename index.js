@@ -7,7 +7,6 @@ var me = web3.eth.coinbase;
 var originalBalance = web3.eth.getBalance(me).toNumber();
 var blocks = web3.eth.blockNumber;
 
-
 // Set initial values. 
 document.getElementById('coinbase').innerText = 'Me: ' + me;
 document.getElementById('original').innerText = ' Original Eth: ' + web3.fromWei(originalBalance) + '    watching...';

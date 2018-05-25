@@ -22,28 +22,49 @@ printNode2();
 printLastBlock(); 
 
 function watchForUpdates() {
-  // Node 1 updates.
-  web3.setProvider(new web3.providers.HttpProvider(peers[0]));
-  if (!web3.isConnected()) {
+  var node1 = new Web3(); 
+  node1.setProvider(new node1.providers.HttpProvider(peers[0])); 
+  if (!node1.isConnected()) {
     console.error("Can't connect to geth for Node 0");
     return;
   }
 
-  web3.eth.filter('latest').watch(function(error, result) {
+  node1.eth.filter('latest').watch(function(error, result) {
     if (!error) {
-      console.log("Node 0 latest");
+        // Get last block. 
+        var lastBlock = node1.eth.getBlock(node1.eth.blockNumber);
+        var coinbase = node1.eth.coinbase;
+        if (lastBlock.miner === coinbase) {
+          blocksMinedNode1++; // New block mined with 0
+        }
+
+        // Update node1 values. 
+        printNode1();
+        printLastBlock();
+        printBlockchain();
     }
   });
 
-  web3.setProvider(new web3.providers.HttpProvider(peers[1]));
-  if (!web3.isConnected()) {
+  var node2 = new Web3(); 
+  node2.setProvider(new node2.providers.HttpProvider(peers[1])); 
+  if (!node2.isConnected()) {
     console.error("Can't connect to geth for Node 1");
     return;
   }
 
-  web3.eth.filter('latest').watch(function(error, result) {
+  node2.eth.filter('latest').watch(function(error, result) {
     if (!error) {
-      console.log("Node 1 latest");
+        // Get last block. 
+        var lastBlock = node2.eth.getBlock(node2.eth.blockNumber);
+        var coinbase = node2.eth.coinbase;
+        if (lastBlock.miner === coinbase) {
+          blocksMinedNode2++; // New block mined with 0
+        }
+
+        // Update node1 values. 
+        printNode2();
+        printLastBlock();
+        printBlockchain();
     }
   });
 }
@@ -100,7 +121,7 @@ function setWeb3Provider() {
 
 function printBlockchain() {
   // These are common Ethereum blockchain values. 
-  var blocks = web3.eth.blockNumber;
+  var blocks = web3.eth.blockNumber - 1; // First block is the genesis block
   var lastBlock = web3.eth.getBlock(blocks);
   document.getElementById('blocks').innerText = ' Blocks: ' +  blocks;  
   document.getElementById('totaldifficulty').innerText = 'Total Difficulty: ' + lastBlock.totalDifficulty;

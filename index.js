@@ -1,77 +1,165 @@
 var Web3 = require('web3');
-// const web3Admin = require('web3admin');
 var web3 = new Web3();
 
-// Extend the API and add admin functionality. 
-// web3Admin.extend(web3);
+// Total peers.
+const peers = ["http://localhost:8545", "http://localhost:8544"];
+var blocksMinedNode1 = calcMinedBlocks(peers[0]);
+var blocksMinedNode2 = calcMinedBlocks(peers[1]);
 
-// Set the localhost provider. 
-web3.setProvider(new web3.providers.HttpProvider());
+// Set a web3 provider based on the ip addresses of the peers. 
+setWeb3Provider(); 
 
-// Query initial values
-var me = web3.eth.coinbase;
-var originalBalance = web3.eth.getBalance(me).toNumber();
-var blocks = web3.eth.blockNumber;
-var lastBlock = web3.eth.getBlock(blocks);
-var blocksMined = 0; 
+// General blockchain values. 
+printBlockchain(); 
 
-// Ethereum blockchain
-document.getElementById('coinbase').innerText = 'Me: ' + me;
-document.getElementById('original').innerText = ' Original Eth: ' + web3.fromWei(originalBalance) + '    watching...';
-document.getElementById('blocks').innerText = ' Blocks: ' +  blocks;  
-document.getElementById('totaldifficulty').innerText = 'Total Difficulty: ' + lastBlock.totalDifficulty; 
+// Node 1 values.
+printNode1(); 
 
-// Node value
-if (web3.eth.mining === true) {
-  // Thinking
-  document.getElementById('state').style.backgroundColor = "green";  
-} else {
-  document.getElementById('state').style.backgroundColor = "red"; 
+// Node 2 values. 
+printNode2();
+
+// Last block values. 
+printLastBlock(); 
+
+function watchForUpdates() {
+  // Node 1 updates.
+  web3.setProvider(new web3.providers.HttpProvider(peers[0]));
+  if (!web3.isConnected()) {
+    console.error("Can't connect to geth for Node 0");
+    return;
+  }
+
+  web3.eth.filter('latest').watch(function(error, result) {
+    if (!error) {
+      console.log("Node 0 latest");
+    }
+  });
+
+  web3.setProvider(new web3.providers.HttpProvider(peers[1]));
+  if (!web3.isConnected()) {
+    console.error("Can't connect to geth for Node 1");
+    return;
+  }
+
+  web3.eth.filter('latest').watch(function(error, result) {
+    if (!error) {
+      console.log("Node 1 latest");
+    }
+  });
 }
 
-// Last block values
-document.getElementById('number').innerText = 'Number: ' + lastBlock.number; 
-document.getElementById('hash').innerText = 'Hash: ' + lastBlock.hash; 
-document.getElementById('difficulty').innerText = 'Difficulty: ' + lastBlock.difficulty; 
-document.getElementById('miner').innerText = 'Miner: ' + lastBlock.miner; 
+// [TODO] Defer this call since it's a computationally expensive call.
+function calcMinedBlocks() {
+  // argument[0] receives the peer string. 
+  var peer = arguments[0];
 
-function watchBalance() {
-    web3.eth.filter('latest').watch(function() {
-        var currentBalance = web3.eth.getBalance(me).toNumber();
-        blocks = web3.eth.blockNumber;
-        lastBlock = web3.eth.getBlock(blocks);
+  // Connect to web3 for this peer. 
+  web3.setProvider(new web3.providers.HttpProvider(peer));
 
-        // Ethereum Blockchain
-        document.getElementById("current").innerText = 'Current Eth: ' + web3.fromWei(currentBalance);
-        document.getElementById('blocks').innerText = ' Blocks: ' +  blocks; 
-        document.getElementById('difficulty').innerText = ' Difficulty: ' +  difficulty; 
-        document.getElementById('totaldifficulty').innerText = 'Total Difficulty: ' + lastBlock.totalDifficulty; 
+  // Check if it's a valid web3 connection. 
+  if (!web3.isConnected()) {
+    console.error("No connection found with geth. Start geth on the nodes.");
+    return; 
+  }
 
-        // Node value
-        if (web3.eth.mining === true) {
-          // Mining.
-          document.getElementById('state').style.backgroundColor = "green";  
-        } else {
-          // Not-mining. 
-          document.getElementById('state').style.backgroundColor = "red"; 
-        }
+  // Go through all the blocks and check which blocks were mined by this node.  
+  var blocks = web3.eth.blockNumber; 
+  var coinbase = web3.eth.coinbase; 
+  var numBlocksMined = 0; 
+  for (var i = 0; i < blocks; i++) {
+    var block = web3.eth.getBlock(i);
+    if (block.miner === coinbase) {
+      numBlocksMined++;
+    }
+  }
 
-        // Calculate the number of blocks mined by this node. 
-        if (lastBlock.miner === me) {
-          blocksMined += 1; 
-        }
-        document.getElementById('numBlocks').innerText = blocksMined;
-
-        // New block values
-        document.getElementById('number').innerText = 'Number: ' + lastBlock.number; 
-        document.getElementById('hash').innerText = 'Hash: ' + lastBlock.hash; 
-        document.getElementById('difficulty').innerText = 'Difficulty: ' + lastBlock.difficulty; 
-        document.getElementById('miner').innerText = 'Miner: ' + lastBlock.miner; 
-    });
+  return numBlocksMined; 
 }
 
-function startMining() {
-  web3.eth.mining.start();
+function setWeb3Provider() {
+  var isConnected = false; 
+  // Find a web3 connection that's connected. 
+  for (var i = 0; i < peers.length; i++) {
+    web3.setProvider(new web3.providers.HttpProvider(peers[i]));
+    if (web3.isConnected()) {
+      isConnected = true; 
+      break;
+    }
+  }
+
+  // No connection found with geth. 
+  if (isConnected === false) {
+    document.getElementById('connection').style.backgroundColor = "red";
+    console.error("No connection found with geth. Start geth on the nodes.");
+    return;
+  } else {
+    console.log("Geth Connection successful."); 
+    document.getElementById('connection').style.backgroundColor = "green";
+  }
 }
 
-watchBalance();
+function printBlockchain() {
+  // These are common Ethereum blockchain values. 
+  var blocks = web3.eth.blockNumber;
+  var lastBlock = web3.eth.getBlock(blocks);
+  document.getElementById('blocks').innerText = ' Blocks: ' +  blocks;  
+  document.getElementById('totaldifficulty').innerText = 'Total Difficulty: ' + lastBlock.totalDifficulty;
+}
+
+function printNode1() {
+  // Set the provider for 1st node. 
+  web3.setProvider(new web3.providers.HttpProvider(peers[0]));
+  if (!web3.isConnected()) {
+    console.error("Unable to connect to Node 1 geth instance.");
+    return; 
+  }
+
+  // Mining state. 
+  web3.eth.mining ? document.getElementById('node1').style.backgroundColor = "green" : document.getElementById('node1').style.backgroundColor = "red"; 
+
+  // Coinbase address
+  var me = web3.eth.coinbase; 
+  document.getElementById('address1').innerText = 'Coinbase: ' + me;
+
+  // Account balance. 
+  var balance = web3.eth.getBalance(me).toNumber();
+  document.getElementById('balance1').innerText = 'Balance: ' + web3.fromWei(balance);
+
+  // Current blocks
+  document.getElementById('numBlocks1').innerText = blocksMinedNode1; 
+}
+
+function printNode2() {
+    // Set the provider for 1st node. 
+    web3.setProvider(new web3.providers.HttpProvider(peers[1]));
+    if (!web3.isConnected()) {
+      console.error("Unable to connect to Node 1 geth instance.");
+      return; 
+    }
+  
+    // Mining state. 
+    web3.eth.mining ? document.getElementById('node2').style.backgroundColor = "green" : document.getElementById('node2').style.backgroundColor = "red"; 
+  
+    // Coinbase address
+    var me = web3.eth.coinbase; 
+    document.getElementById('address2').innerText = 'Coinbase: ' + me;
+  
+    // Account balance. 
+    var balance = web3.eth.getBalance(me).toNumber();
+    document.getElementById('balance2').innerText = 'Balance: ' + web3.fromWei(balance);
+  
+    // Blocks mined. 
+    document.getElementById('numBlocks2').innerText = blocksMinedNode2; 
+}
+
+function printLastBlock() {
+  var lastBlock = web3.eth.getBlock(web3.eth.blockNumber);
+
+  // New block values
+  document.getElementById('number').innerText = 'Number: ' + lastBlock.number; 
+  document.getElementById('hash').innerText = 'Hash: ' + lastBlock.hash; 
+  document.getElementById('difficulty').innerText = 'Difficulty: ' + lastBlock.difficulty; 
+  document.getElementById('miner').innerText = 'Miner: ' + lastBlock.miner; 
+}
+
+watchForUpdates();

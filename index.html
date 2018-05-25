@@ -1,7 +1,33 @@
 <!DOCTYPE html>
 <html>
 <style>    
-    #state {
+    .title {
+        display: flex
+    }
+
+    .nodeLayout {
+        margin-top: 20px
+    }
+
+    #connection {
+        margin-top: 28px;
+        margin-left: 25px;
+        height: 25px;
+        width: 25px;
+        background-color: red;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    #node1 {
+        height: 50px;
+        width: 50px;
+        background-color: red;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    #node2 {
         height: 50px;
         width: 50px;
         background-color: red;
@@ -13,21 +39,44 @@
         margin-top: 10px
     }
 
+    .layout {
+        display: flex
+    }
+
+    .layout div {
+        flex-basis: 100%
+    }
+
 </style>
 <body>
-    <h1>coinbase balance</h1>
+    <div class="blockchain">
+        <div class="title">
+            <h1>Ethereum Private Blockchain</h1>
+            <div id="connection"></div>
+        </div>
+        <div id="blocks"></div>
+        <div id="totaldifficulty"></div>
+    </div>
     <div></div>
-    <div id="coinbase"></div>
-    <div></div>
-    <div id="original"></div>
-    <div id="current"></div>
-    <div id="blocks"></div>
-    <div id="totaldifficulty"></div>
-    <div></div>
-    <div>
-        <h1>Node</h1>
-        <div id="state"></div>
-        <div class="blocks">Blocks Mined: <span id="numBlocks"></span></div>
+    <div class="layout">
+        <div>
+            <h1>Node 1</h1>
+            <div id="node1"></div>
+            <div class="nodeLayout">
+                <div id="address1"></div>
+                <div id="balance1"></div>
+                <div class="blocks">Blocks Mined: <span id="numBlocks1"></span></div>
+            </div>
+        </div>
+        <div>
+            <h1>Node 2</h1>
+            <div id="node2"></div>
+            <div class="nodeLayout">
+                <div id="address2"></div>
+                <div id="balance2"></div>
+                <div class="blocks">Blocks Mined: <span id="numBlocks2"></span></div>
+            </div>
+        </div>
     </div>
     <div></div>
     <div>
@@ -40,6 +89,7 @@
 </body>
 <script type="text/javascript" src="./node_modules/bignumber.js/bignumber.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="./index.js">
 </script>
 </html>

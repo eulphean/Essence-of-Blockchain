@@ -2,25 +2,19 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-  ofBackground(0);
+  ofBackground(ofColor::red);
   
   ofSetFrameRate(15);
   
   
   // Collect all the fonts.
   fonts.push_back("betong.ttf");
-  fonts.push_back("antaro.ttf");
-  fonts.push_back("bellada.ttf");
+  fonts.push_back("jmt.otf");
+  fonts.push_back("perfect.otf");
   fonts.push_back("chengis.otf");
-  fonts.push_back("consequences.ttf");
-  fonts.push_back("kingdom.ttf");
   fonts.push_back("schaeffer.ttf");
-  fonts.push_back("xminus.ttf");
-  fonts.push_back("yonder.ttf");
   fonts.push_back("keys.ttf");
-  fonts.push_back("fresty.ttf");
   fonts.push_back("giovanni.ttf");
-  fonts.push_back("viksi.ttf");
   
   // Load the first font.
   myFont.load(fonts[currentFontIdx], fontSize);
@@ -44,7 +38,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-  ofSetColor(ofColor::white);
+  ofSetColor(ofColor::black);
   string toShow = "0x" + hash;
   
   // Calculate the x position to print the string at.

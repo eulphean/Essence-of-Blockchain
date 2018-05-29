@@ -38,7 +38,10 @@ class ofApp : public ofBaseApp{
   
     // Flags
     bool showGui = true;
+  
+    bool hasDrawn = false;
 };
+
 
 //    // Test font.
 //    ofTrueTypeFont testFont;

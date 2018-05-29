@@ -12,7 +12,8 @@ void Character::draw(string c, int curX) {
   ofPushMatrix();
   ofPushStyle();
     ofEnableAlphaBlending();
-    int alpha = calculateAlpha();
+    //int alpha = calculateAlpha();
+    int alpha = 255; 
     ofSetColor(ofColor::black, alpha);
     trueFont.drawString(c, curX, 0);
     ofDisableAlphaBlending();

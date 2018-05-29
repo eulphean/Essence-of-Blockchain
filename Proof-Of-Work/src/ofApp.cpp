@@ -18,7 +18,7 @@ void ofApp::setup(){
   gui.add(fontSize.setup("Font Size", 15, 5, 100));
   gui.add(characterSpacing.setup("Character Spacing", 10, 5, 50));
   gui.add(frameRate.setup("Frame Rate", 5, 1, 60));
-  gui.add(xPosition.setup("X Position", 50, 0, ofGetWidth()/2));
+  gui.add(xPosition.setup("X Position", 50, -ofGetWidth(), ofGetWidth()));
   fontSize.addListener(this, &ofApp::updateFromGui);
   gui.loadFromFile("ProofOfWork.xml");
 }
@@ -26,7 +26,10 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
   ofSetFrameRate(frameRate);
-  createNewHash();
+  if (!hasDrawn) {
+    createNewHash();
+    //hasDrawn = true;
+  }
 }
 
 //--------------------------------------------------------------
@@ -45,6 +48,7 @@ void ofApp::draw(){
   if (showGui) {
     gui.draw();
   }
+
 }
 
 void ofApp::createCharacters() {
@@ -102,28 +106,4 @@ void ofApp::keyPressed(int key) {
 void ofApp::exit() {
   gui.saveToFile("ProofOfWork.xml");
 }
-
-/*
-  ofSetColor(ofColor::black, alpha);
-  testFont.drawString("Hello", 50, 50);
-  ofPopStyle();
- 
-  // Show test font.
-  ofPushStyle();
-  long int elapsedTime = ofGetElapsedTimeMillis();
-  if (shouldFadeOut) {
-    alpha = ofMap(elapsedTime, 0, fadeOutTime, 255, 0, true);
-    if (alpha == 0) {
-      shouldFadeOut = false; // Now, fade in.
-      ofResetElapsedTimeCounter(); // Reset time
-    }
-  } else {
-    alpha = ofMap(elapsedTime, 0, fadeInTime, 0, 255, true);
-    if (alpha == 255) {
-      // Completely faded in.
-      shouldFadeOut = true; // Now, fade out
-      ofResetElapsedTimeCounter(); // Reset time for next phase.
-    }
-  }
-  */
 

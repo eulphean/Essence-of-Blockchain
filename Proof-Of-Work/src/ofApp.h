@@ -13,6 +13,7 @@ class ofApp : public ofBaseApp{
 		void draw();
     void keyPressed(int key);
   
+    void createNewPartition();
     void createNewHash();
     void createCharacters();
     void updateFromGui(float &val);
@@ -27,25 +28,26 @@ class ofApp : public ofBaseApp{
     // Characters.
     std::vector<Character> characters;
     std::vector<string> fonts;
-    int currentFontIdx = 0;
+    int currentFontIdx = 3;
   
     // GUI
     ofxPanel gui;
     ofxFloatSlider fontSize;
     ofxFloatSlider characterSpacing;
     ofxIntSlider frameRate;
+    ofxIntSlider partitionSize;
     ofxFloatSlider xPosition;
   
     // Flags
     bool showGui = true;
   
-    bool hasDrawn = false;
+    // A partition of integers that will keep updating with the
+    // new hash while other stay stagnant. Size of the partition
+    // is decided by 'partitionSize' integer in GUI. This is to
+    // extract the constantly updating, iterating, thinking quality
+    // of the mining process. 
+    vector<int> updatePartition;
+    long int resetPartitionTime = 1; // Starting with 2 seconds. Updates
+                                     // everytime the partition gets updated.
+    long int lastTime; 
 };
-
-
-//    // Test font.
-//    ofTrueTypeFont testFont;
-//    int alpha = 0; // Max value is 255.
-//    long int fadeInTime = 1000;
-//    long int fadeOutTime = 1000;
-//    bool shouldFadeOut = false;

@@ -7,18 +7,23 @@ void Character::setup(string font, float fontSize) {
   fadeTime = ofRandom(1, 5);
 }
 
-void Character::draw(string c, int curX) {
-  // Draw the characters.
-  ofPushMatrix();
-  ofPushStyle();
-    ofEnableAlphaBlending();
-    //int alpha = calculateAlpha();
-    int alpha = 255; 
-    ofSetColor(ofColor::black, alpha);
-    trueFont.drawString(c, curX, 0);
-    ofDisableAlphaBlending();
-  ofPopStyle();
-  ofPopMatrix();
+void Character::draw(string c, int curX, bool shouldUpdate) {
+    // Draw the characters.
+    ofPushMatrix();
+    ofPushStyle();
+      ofEnableAlphaBlending();
+      //int alpha = calculateAlpha();
+      int alpha = 175;
+      ofSetColor(ofColor::black, alpha);
+      if (shouldUpdate || lastHashCharacter == "_") {
+        trueFont.drawString(c, curX, 0);
+        lastHashCharacter = c;
+      } else {
+        trueFont.drawString(lastHashCharacter, curX, 0);
+      }
+      ofDisableAlphaBlending();
+    ofPopStyle();
+    ofPopMatrix();
 }
 
 int Character::calculateAlpha() {
@@ -40,19 +45,3 @@ int Character::calculateAlpha() {
   
   return alpha;
 }
-
-//long int elapsedTime = ofGetElapsedTimeMillis();
-//  if (shouldFadeOut) {
-//    alpha = ofMap(elapsedTime, 0, fadeOutTime, 255, 0, true);
-//    if (alpha == 0) {
-//      shouldFadeOut = false; // Now, fade in.
-//      ofResetElapsedTimeCounter(); // Reset time
-//    }
-//  } else {
-//    alpha = ofMap(elapsedTime, 0, fadeInTime, 0, 255, true);
-//    if (alpha == 255) {
-//      // Completely faded in.
-//      shouldFadeOut = true; // Now, fade out
-//      ofResetElapsedTimeCounter(); // Reset time for next phase.
-//    }
-//  }

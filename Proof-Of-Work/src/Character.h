@@ -11,7 +11,7 @@ class Character {
 
 	public:
     void setup(string font, float fontSize);
-    void draw(string hash, int curX);
+    void draw(string hash, int curX, bool shouldUpdate);
     int calculateAlpha();
  
   private:
@@ -19,5 +19,5 @@ class Character {
     Fade fadeState = In; // Start by fading in. 
     long int lastTime;
     int fadeTime;
-    string prevChar; 
+    string lastHashCharacter = "_"; // Last hash character.
 };

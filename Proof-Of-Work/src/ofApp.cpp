@@ -19,16 +19,27 @@ void ofApp::setup(){
   gui.add(characterSpacing.setup("Character Spacing", 10, 5, 50));
   gui.add(frameRate.setup("Frame Rate", 5, 1, 60));
   gui.add(xPosition.setup("X Position", 50, -ofGetWidth(), ofGetWidth()));
+  gui.add(partitionSize.setup("Update Partition Size", 10, 0, 64));
   fontSize.addListener(this, &ofApp::updateFromGui);
   gui.loadFromFile("ProofOfWork.xml");
+  
+  // Create the partition.
+  createNewPartition();
+  
+  // Store current time.
+  lastTime = ofGetElapsedTimef();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
   ofSetFrameRate(frameRate);
-  if (!hasDrawn) {
-    createNewHash();
-    //hasDrawn = true;
+  createNewHash();
+  
+  // Should we update the partition.
+  if (ofGetElapsedTimef() - lastTime > resetPartitionTime) {
+    createNewPartition();
+    lastTime = ofGetElapsedTimef();
+    resetPartitionTime = ofRandom(1, 5);
   }
 }
 
@@ -40,15 +51,32 @@ void ofApp::draw(){
   ofPushMatrix();
     ofTranslate(xPosition, ofGetHeight()/2);
     for (auto c: ofToUpper(hash)) {
-      characters[idx].draw(ofToString(c), curX);
+      // Check if this idx is in the updating partition.
+      bool shouldUpdate = ofContains(updatePartition, idx);
+      characters[idx].draw(ofToString(c), curX, shouldUpdate);
       curX += characterSpacing;
+      idx++;
     }
   ofPopMatrix();
   
   if (showGui) {
     gui.draw();
   }
+}
 
+void ofApp::createNewPartition() {
+  updatePartition.clear();
+  
+  // Out of 64 numbers, choose 'partitionSize' random numbers.
+  while (updatePartition.size() < partitionSize) {
+    int randomIdx = ofRandom(0, 63);
+    // Keep generating a random idx till we find one that's not
+    // in the vector.
+    while (ofContains(updatePartition, randomIdx)) {
+      randomIdx = ofRandom(0, 63);
+    }
+    updatePartition.push_back(randomIdx);
+  }
 }
 
 void ofApp::createCharacters() {

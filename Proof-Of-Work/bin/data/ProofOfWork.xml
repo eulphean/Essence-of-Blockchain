@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <group>
-	<Font_Size>26</Font_Size>
+	<Font_Size>34</Font_Size>
 	<Character_Spacing>18</Character_Spacing>
-	<Frame_Rate>18</Frame_Rate>
-	<X_Position>51.2</X_Position>
+	<Frame_Rate>5</Frame_Rate>
+	<X_Position>61.4399</X_Position>
+	<Update_Partition_Size>20</Update_Partition_Size>
 </group>

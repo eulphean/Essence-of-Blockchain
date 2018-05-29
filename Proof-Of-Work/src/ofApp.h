@@ -19,24 +19,15 @@ class ofApp : public ofBaseApp{
     void exit();
   
   private:
-    bool showGui = true;
-  
-    SHA256 sha256; // SHA-256 utility to generate hashes. 
+    // Hashing.
+    SHA256 sha256; // SHA-256 utility to generate hashes.
     std::vector<char> hashString;
     string hash;
   
-    // Container of all the hash characters
+    // Characters.
     std::vector<Character> characters;
-  
     std::vector<string> fonts;
     int currentFontIdx = 0;
-  
-    // Test font.
-    ofTrueTypeFont testFont;
-    int alpha = 0; // Max value is 255.
-    long int fadeInTime = 1000;
-    long int fadeOutTime = 1000;
-    bool shouldFadeOut = false;
   
     // GUI
     ofxPanel gui;
@@ -44,4 +35,14 @@ class ofApp : public ofBaseApp{
     ofxFloatSlider characterSpacing;
     ofxIntSlider frameRate;
     ofxFloatSlider xPosition;
+  
+    // Flags
+    bool showGui = true;
 };
+
+//    // Test font.
+//    ofTrueTypeFont testFont;
+//    int alpha = 0; // Max value is 255.
+//    long int fadeInTime = 1000;
+//    long int fadeOutTime = 1000;
+//    bool shouldFadeOut = false;

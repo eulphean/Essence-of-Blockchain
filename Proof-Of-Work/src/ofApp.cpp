@@ -19,15 +19,47 @@ void ofApp::setup(){
   gui.add(characterSpacing.setup("Character Spacing", 10, 5, 50));
   gui.add(frameRate.setup("Frame Rate", 5, 1, 60));
   gui.add(xPosition.setup("X Position", 50, 0, ofGetWidth()/2));
-  fontSize.addListener(this, &ofApp::updateFonts);
+  fontSize.addListener(this, &ofApp::updateFromGui);
   gui.loadFromFile("ProofOfWork.xml");
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
   ofSetFrameRate(frameRate);
+  createNewHash();
+}
+
+//--------------------------------------------------------------
+void ofApp::draw(){
+  // Draw every single character from the hash. 
+  int idx = 0;
+  int curX = 0;
+  ofPushMatrix();
+    ofTranslate(xPosition, ofGetHeight()/2);
+    for (auto c: ofToUpper(hash)) {
+      characters[idx].draw(ofToString(c), curX);
+      curX += characterSpacing;
+    }
+  ofPopMatrix();
   
-  // Keep pushing a new character to this vector to generate a new hash.
+  if (showGui) {
+    gui.draw();
+  }
+}
+
+void ofApp::createCharacters() {
+  characters.clear();
+  
+  // We have 64 characters.
+  for (int i = 0; i < 64; i++) {
+    Character c;
+    c.setup(fonts[currentFontIdx], fontSize);
+    characters.push_back(c);
+  }
+}
+
+void ofApp::createNewHash() {
+   // Keep pushing a new character to this vector to generate a new hash.
   hashString.push_back('a');
   
   // Empty the vector when the size becomes really big.
@@ -39,51 +71,17 @@ void ofApp::update(){
   hash = sha256 (ofToString(hashString));
 }
 
-//--------------------------------------------------------------
-void ofApp::draw(){
-  string toShow = hash;
-  
-  // Draw the characters.
-  int idx = 0;
-  int curX = 0;
-  ofPushMatrix();
-  ofPushStyle();
-    ofSetColor(ofColor::black);
-    ofTranslate(xPosition, ofGetHeight()/2);
-    for (auto &c: ofToUpper(hash)) {
-      myFonts[idx].drawString(ofToString(c), curX, 0);
-      curX += characterSpacing; // Each character is 5px apart.
-    }
-  ofPopStyle();
-  ofPopMatrix();
-  
-  
-  if (showGui) {
-    gui.draw();
-  }
-}
 
-// Callback from GUI.
-void ofApp::updateFonts(float &val) {
-  populateFonts();
-}
-
-void ofApp::populateFonts() {
-  // Populate the vector of font.
-  myFonts.clear();
-  
-  for (int i = 0; i < 64; i++) {
-    ofTrueTypeFont font;
-    font.load(fonts[currentFontIdx], fontSize);
-    myFonts.push_back(font);
-  }
+// Callback for any GUI updates.
+void ofApp::updateFromGui(float &val) {
+  createCharacters();
 }
 
 void ofApp::keyPressed(int key) {
   if (key == OF_KEY_RIGHT) {
     // Wrapp current font idx.
     currentFontIdx = (currentFontIdx + 1) % fonts.size();
-    populateFonts();
+    createCharacters();
   }
   
   if (key == OF_KEY_LEFT) {
@@ -93,8 +91,7 @@ void ofApp::keyPressed(int key) {
     } else {
       currentFontIdx--;
     }
-    
-    populateFonts();
+    createCharacters();
   }
   
   if (key == 'h') {
@@ -105,4 +102,28 @@ void ofApp::keyPressed(int key) {
 void ofApp::exit() {
   gui.saveToFile("ProofOfWork.xml");
 }
+
+/*
+  ofSetColor(ofColor::black, alpha);
+  testFont.drawString("Hello", 50, 50);
+  ofPopStyle();
+ 
+  // Show test font.
+  ofPushStyle();
+  long int elapsedTime = ofGetElapsedTimeMillis();
+  if (shouldFadeOut) {
+    alpha = ofMap(elapsedTime, 0, fadeOutTime, 255, 0, true);
+    if (alpha == 0) {
+      shouldFadeOut = false; // Now, fade in.
+      ofResetElapsedTimeCounter(); // Reset time
+    }
+  } else {
+    alpha = ofMap(elapsedTime, 0, fadeInTime, 0, 255, true);
+    if (alpha == 255) {
+      // Completely faded in.
+      shouldFadeOut = true; // Now, fade out
+      ofResetElapsedTimeCounter(); // Reset time for next phase.
+    }
+  }
+  */
 

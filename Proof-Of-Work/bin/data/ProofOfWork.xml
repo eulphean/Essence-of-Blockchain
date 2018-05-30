@@ -2,7 +2,7 @@
 <group>
 	<Font_Size>34</Font_Size>
 	<Character_Spacing>18</Character_Spacing>
-	<Frame_Rate>5</Frame_Rate>
+	<Frame_Rate>12</Frame_Rate>
 	<X_Position>61.4399</X_Position>
-	<Update_Partition_Size>20</Update_Partition_Size>
+	<Update_Partition_Size>16</Update_Partition_Size>
 </group>

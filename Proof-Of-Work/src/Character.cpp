@@ -13,8 +13,8 @@ void Character::draw(string c, int curX, bool shouldUpdate) {
     ofPushStyle();
       ofEnableAlphaBlending();
       //int alpha = calculateAlpha();
-      int alpha = 175;
-      ofSetColor(ofColor::black, alpha);
+      int alpha = 255;
+      ofSetColor(ofColor::white, alpha);
       if (shouldUpdate || lastHashCharacter == "_") {
         trueFont.drawString(c, curX, 0);
         lastHashCharacter = c;

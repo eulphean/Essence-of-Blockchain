@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <group>
 	<Font_Size>34</Font_Size>
-	<Character_Spacing>18.725</Character_Spacing>
+	<Character_Spacing>19</Character_Spacing>
 	<Frame_Rate>7</Frame_Rate>
-	<X_Position>40</X_Position>
-	<Update_Partition_Size>17</Update_Partition_Size>
+	<X_Position>10.24</X_Position>
+	<Update_Partition_Size>20</Update_Partition_Size>
+	<Reset_Mined_Time>3</Reset_Mined_Time>
 </group>

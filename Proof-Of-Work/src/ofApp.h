@@ -4,6 +4,12 @@
 #include "sha256.h"
 #include "ofxGui.h"
 #include "Character.h"
+#include "ofxPostGlitch.h"
+
+enum State {
+  Mining,
+  Mined
+};
 
 class ofApp : public ofBaseApp{
 
@@ -12,7 +18,9 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     void keyPressed(int key);
+    void keyReleased(int key);
   
+    void drawTextFbo();
     void createNewPartition();
     void createNewHash();
     void createCharacters();
@@ -36,6 +44,7 @@ class ofApp : public ofBaseApp{
     ofxFloatSlider fontSize;
     ofxFloatSlider characterSpacing;
     ofxIntSlider frameRate;
+    ofxIntSlider resetMinedTime; // Time we want to hold before we start mining again. 
     ofxIntSlider partitionSize;
     ofxFloatSlider xPosition;
   
@@ -50,5 +59,15 @@ class ofApp : public ofBaseApp{
     vector<int> updatePartition;
     long int resetPartitionTime = 1; // Starting with 2 seconds. Updates
                                      // everytime the partition gets updated.
-    long int lastTime; 
+    long int lastPartitionTime;
+  
+    // Text glitch. 
+    ofxPostGlitch textGlitch;
+    ofFbo textFbo;
+  
+    State miningState = Mining; // We begin with a mining state.
+    long int resetMiningTime = 5; // This is randomly between 5-10 seconds right now.
+                              // In reality, it's around 15-20 seconds.
+    long int lastMiningTime;
+    long int lastMinedTime;
 };

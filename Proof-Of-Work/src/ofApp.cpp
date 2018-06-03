@@ -63,7 +63,7 @@ void ofApp::update(){
   
   if (miningState == Mined) {
     if (ofGetElapsedTimef() - lastMinedTime > resetMinedTime) {
-      resetMiningTime = ofRandom(5, 10); // Calculate a new random mining time.
+      resetMiningTime = ofRandom(10, 15); // Calculate a new random mining time.
       lastMiningTime = ofGetElapsedTimef(); // Start tracking mining time.
       cout << "Beginning mining." << endl;
       miningState = Mining;
@@ -75,6 +75,24 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+  if (miningState == Mining) {
+    textGlitch.setFx(OFXPOSTGLITCH_CUTSLIDER, true);
+    textGlitch.setFx(OFXPOSTGLITCH_NOISE, true);
+    textGlitch.setFx(OFXPOSTGLITCH_CONVERGENCE, false);
+    textGlitch.setFx(OFXPOSTGLITCH_INVERT, true);
+    textGlitch.setFx(OFXPOSTGLITCH_OUTLINE, true);
+    //textGlitch.setFx(OFXPOSTGLITCH_GLOW, false);
+  }
+  
+  if (miningState == Mined) {
+    textGlitch.setFx(OFXPOSTGLITCH_CUTSLIDER, false);
+    textGlitch.setFx(OFXPOSTGLITCH_NOISE, false);
+    textGlitch.setFx(OFXPOSTGLITCH_CONVERGENCE, true);
+    textGlitch.setFx(OFXPOSTGLITCH_INVERT, false);
+    textGlitch.setFx(OFXPOSTGLITCH_OUTLINE, false);
+    //textGlitch.setFx(OFXPOSTGLITCH_GLOW, true);
+  }
+  
   /* Apply effects */
   textGlitch.generateFx();
 

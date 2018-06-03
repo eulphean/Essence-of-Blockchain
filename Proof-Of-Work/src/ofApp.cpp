@@ -46,10 +46,17 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
   // Draw every single character from the hash. 
-  int idx = 0;
+  int idx = 2;
   int curX = 0;
   ofPushMatrix();
     ofTranslate(xPosition, ofGetHeight()/2);
+  
+    // Draw the first 2 characters.
+    characters[0].draw(ofToString('0'), curX, false);
+    curX += characterSpacing;
+    characters[1].draw(ofToString('x'), curX, false);
+    curX += characterSpacing;
+
     for (auto c: ofToUpper(hash)) {
       // Check if this idx is in the updating partition.
       bool shouldUpdate = ofContains(updatePartition, idx);
@@ -68,12 +75,13 @@ void ofApp::createNewPartition() {
   updatePartition.clear();
   
   // Out of 64 numbers, choose 'partitionSize' random numbers.
+  // Numbers start from index 2.
   while (updatePartition.size() < partitionSize) {
-    int randomIdx = ofRandom(0, 63);
+    int randomIdx = ofRandom(2, 63);
     // Keep generating a random idx till we find one that's not
     // in the vector.
     while (ofContains(updatePartition, randomIdx)) {
-      randomIdx = ofRandom(0, 63);
+      randomIdx = ofRandom(2, 63);
     }
     updatePartition.push_back(randomIdx);
   }
@@ -83,7 +91,7 @@ void ofApp::createCharacters() {
   characters.clear();
   
   // We have 64 characters.
-  for (int i = 0; i < 64; i++) {
+  for (int i = 0; i < numCharacters; i++) {
     Character c;
     c.setup(fonts[currentFontIdx], fontSize);
     characters.push_back(c);

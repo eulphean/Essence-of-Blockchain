@@ -29,6 +29,7 @@ class ofApp : public ofBaseApp{
     std::vector<Character> characters;
     std::vector<string> fonts;
     int currentFontIdx = 3;
+    const int numCharacters = 66; // OX + 64 character hash.
   
     // GUI
     ofxPanel gui;

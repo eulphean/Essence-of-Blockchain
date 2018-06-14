@@ -1,18 +1,13 @@
 #pragma once
 
 #include "ofMain.h"
-#include "sha256.h"
 #include "ofxGui.h"
 #include "Character.h"
 #include "ofxPostGlitch.h"
 #include "ofxESCPOS.h"
+#include "BlockHash.h"
 
 using namespace ofx;
-
-enum State {
-  Mining,
-  Mined
-};
 
 class ofApp : public ofBaseApp{
 
@@ -25,53 +20,22 @@ class ofApp : public ofBaseApp{
   
     void initPrinter();
     void printBlockCreation();
-    void drawTextFbo();
-    void createNewPartition();
-    void createNewHash();
-    void createCharacters();
-    void updateFromGui(float &val);
     void exit();
   
-  private:
-    // Hashing.
-    SHA256 sha256; // SHA-256 utility to generate hashes.
-    std::vector<char> hashString;
-    string hash;
-  
-    // Characters.
-    std::vector<Character> characters;
-    std::vector<string> fonts;
-    int currentFontIdx = 3;
-    const int numCharacters = 66; // OX + 64 character hash.
-  
+  private:  
     // GUI
     ofxPanel gui;
-    ofxFloatSlider fontSize;
-    ofxFloatSlider characterSpacing;
-    ofxIntSlider frameRate;
-    ofxIntSlider resetMinedTime; // Time we want to hold before we start mining again. 
-    ofxIntSlider partitionSize;
-    ofxFloatSlider xPosition;
+    ofParameter<int> frameRate { "Frame Rate", 5, 1, 60 };
+    ofParameter<int> resetMinedTime { "Reset Mined Time", 3, 1, 20 }; // Time we want to hold before we start mining again.
+    ofParameterGroup appParameters { "Mining", frameRate, resetMinedTime };
   
     // Flags
     bool showGui = true;
     bool engagePrinter = false;
   
-    // A partition of integers that will keep updating with the
-    // new hash while other stay stagnant. Size of the partition
-    // is decided by 'partitionSize' integer in GUI. This is to
-    // extract the constantly updating, iterating, thinking quality
-    // of the mining process. 
-    vector<int> updatePartition;
-    long int resetPartitionTime = 1; // Starting with 2 seconds. Updates
-                                     // everytime the partition gets updated.
-    long int lastPartitionTime;
-  
     // Text glitch. 
-    ofxPostGlitch textGlitch;
-    ofFbo textFbo;
+    ofxPostGlitch glitch;
   
-    State miningState = Mining; // We begin with a mining state.
     long int resetMiningTime = 5; // This is randomly between 5-10 seconds right now.
                               // In reality, it's around 15-20 seconds.
     long int lastMiningTime;
@@ -79,4 +43,10 @@ class ofApp : public ofBaseApp{
   
     // Thermal printer.
     ESCPOS::DefaultSerialPrinter printer;
+  
+    // Block
+    BlockHash block;
+  
+    // App-level fbo
+    ofFbo canvasFbo;
 };

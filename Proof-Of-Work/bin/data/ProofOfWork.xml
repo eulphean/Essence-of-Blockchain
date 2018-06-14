@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 <group>
-	<Font_Size>34</Font_Size>
-	<Character_Spacing>19</Character_Spacing>
-	<Frame_Rate>7</Frame_Rate>
-	<X_Position>10.24</X_Position>
-	<Update_Partition_Size>30</Update_Partition_Size>
-	<Reset_Mined_Time>5</Reset_Mined_Time>
+	<Mining>
+		<Frame_Rate>7</Frame_Rate>
+		<Reset_Mined_Time>5</Reset_Mined_Time>
+	</Mining>
+	<Block_Hash>
+		<Character_Spacing>19</Character_Spacing>
+		<Update_partition_size>30</Update_partition_size>
+		<X_Position>10.24</X_Position>
+		<Font_Size>34</Font_Size>
+	</Block_Hash>
 </group>

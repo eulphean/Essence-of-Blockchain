@@ -5,6 +5,9 @@
 #include "ofxGui.h"
 #include "Character.h"
 #include "ofxPostGlitch.h"
+#include "ofxESCPOS.h"
+
+using namespace ofx;
 
 enum State {
   Mining,
@@ -20,6 +23,8 @@ class ofApp : public ofBaseApp{
     void keyPressed(int key);
     void keyReleased(int key);
   
+    void initPrinter();
+    void printBlockCreation();
     void drawTextFbo();
     void createNewPartition();
     void createNewHash();
@@ -50,6 +55,7 @@ class ofApp : public ofBaseApp{
   
     // Flags
     bool showGui = true;
+    bool engagePrinter = false;
   
     // A partition of integers that will keep updating with the
     // new hash while other stay stagnant. Size of the partition
@@ -70,4 +76,7 @@ class ofApp : public ofBaseApp{
                               // In reality, it's around 15-20 seconds.
     long int lastMiningTime;
     long int lastMinedTime;
+  
+    // Thermal printer.
+    ESCPOS::DefaultSerialPrinter printer;
 };

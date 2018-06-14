@@ -34,6 +34,9 @@ void ofApp::setup(){
   // Fbo to draw the text in.
   textFbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
   textGlitch.setup(&textFbo);
+  
+  // Initialize the printer.
+  initPrinter();
 }
 
 //--------------------------------------------------------------
@@ -53,15 +56,18 @@ void ofApp::update(){
       resetPartitionTime = ofRandom(1, 5);
     }
   
+    // Mining done? Update state to mined.
     if (ofGetElapsedTimef() - lastMiningTime > resetMiningTime) {
       lastMinedTime = ofGetElapsedTimef(); // Start tracking mined time.
       cout << "Successfully mined." << endl;
       miningState = Mined;
       createNewPartition();
+      engagePrinter = true; // Block is successfully mined. Engage the printer.
     }
   }
   
   if (miningState == Mined) {
+    // Mined visualization done? Update state to mining.
     if (ofGetElapsedTimef() - lastMinedTime > resetMinedTime) {
       resetMiningTime = ofRandom(10, 15); // Calculate a new random mining time.
       lastMiningTime = ofGetElapsedTimef(); // Start tracking mining time.
@@ -80,16 +86,20 @@ void ofApp::draw(){
     textGlitch.setFx(OFXPOSTGLITCH_NOISE, true);
     textGlitch.setFx(OFXPOSTGLITCH_CONVERGENCE, false);
     textGlitch.setFx(OFXPOSTGLITCH_INVERT, true);
-    textGlitch.setFx(OFXPOSTGLITCH_OUTLINE, true);
+    //textGlitch.setFx(OFXPOSTGLITCH_OUTLINE, true);
     //textGlitch.setFx(OFXPOSTGLITCH_GLOW, false);
   }
   
   if (miningState == Mined) {
+    if (engagePrinter) {
+      printBlockCreation();
+    }
+    
     textGlitch.setFx(OFXPOSTGLITCH_CUTSLIDER, false);
     textGlitch.setFx(OFXPOSTGLITCH_NOISE, false);
     textGlitch.setFx(OFXPOSTGLITCH_CONVERGENCE, true);
     textGlitch.setFx(OFXPOSTGLITCH_INVERT, false);
-    textGlitch.setFx(OFXPOSTGLITCH_OUTLINE, false);
+    //textGlitch.setFx(OFXPOSTGLITCH_OUTLINE, false);
     //textGlitch.setFx(OFXPOSTGLITCH_GLOW, true);
   }
   
@@ -105,9 +115,98 @@ void ofApp::draw(){
   }
 }
 
+void ofApp::initPrinter() {
+    // We can get all of the connected serial devices using the
+    // ofxIO::SerialDeviceUtils::listDevices() static method.
+    //
+    auto devices = ofxIO::SerialDeviceUtils::listDevices();
+  
+    std::cout << devices[0].port();
+  
+    // Connect to the first available port.
+    // Conform that this is the one you want.
+    if (!printer.setup(38400))
+    {
+        ofLogError("ofApp::setup") << "Unable to connect to: " << printer.port();
+        ofExit();
+    }
+    else
+    {
+        ofLogNotice("ofApp::setup") << "Connected to: " << printer.port();
+    }
+  
+    // Set up hardware flow control if needed.
+    printer.setDataTerminalReady();
+    printer.setRequestToSend();
+  
+    // Initialize the printer.
+    printer.initialize();
+    printer.flush();
+  
+    // Invert the text.
+    printer.setCharacterSize(ESCPOS::BaseCodes::MAGNIFICATION_1X,
+                             ESCPOS::BaseCodes::MAGNIFICATION_1X);
+    printer.setUpsideDown(true);
+    printer.setAlign(ESCPOS::BaseCodes::ALIGN_LEFT);
+}
+
+void ofApp::printBlockCreation() {
+    // Pre-hash.
+    printer.setDefaultLineSpacing();
+    printer.setInvert(true);
+    string preString;
+    for (int i = 0; i < 48; i++) {
+      preString+='#';
+    }
+    printer.println(ofToString(preString));
+  
+    preString.clear();
+    for (int i = 0; i < 48; i++) {
+      preString+='|';
+    }
+    printer.println(ofToString(preString));
+  
+    preString.clear();
+    for (int i = 0; i < 48; i++) {
+      preString+='%';
+    }
+    printer.println(ofToString(preString));
+  
+    // Actual hash.
+    printer.setInvert(false);
+    printer.setLineSpacing(0);
+    printer.println("0x" + ofToUpper(hash));
+  
+    // Post-hash.
+    printer.setInvert(true);
+    printer.setDefaultLineSpacing();
+  
+    string postString;
+    for (int i = 0; i < 48; i++) {
+      postString+='-';
+    }
+    printer.println(postString);
+  
+    postString.clear();
+    for (int i = 0; i < 48; i++) {
+      postString+=':';
+    }
+    printer.println(postString);
+  
+    postString.clear();
+    for (int i = 0; i < 48; i++) {
+      postString+='.';
+    }
+    printer.println(postString);
+  
+    printer.println("\n");
+  
+    engagePrinter = false;
+}
+
 void ofApp::drawTextFbo() {
   textFbo.begin();
-    ofBackground(ofColor::black);
+    ofBackground(ofColor::red);
     // Draw every single character from the hash.
     int idx = 2;
     int curX = 0;
@@ -149,7 +248,7 @@ void ofApp::createNewPartition() {
     }
   }
   
-  // Push the entire character set.
+  // Push the entire character set. Need to show the new hash.
   if (miningState == Mined) {
     for (int i = 2; i < numCharacters; i++) {
       updatePartition.push_back(i);

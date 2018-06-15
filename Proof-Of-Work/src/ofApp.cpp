@@ -62,14 +62,15 @@ void ofApp::update(){
     // Check if it's time for a transaction.
     if (ofGetElapsedTimeMillis() - lastTransactionTime > nextTransactionTime) {
       // Reset transaction times.
-      std::cout << "Creating a transaction: " << nextTransactionTime << endl;
-      
       lastTransactionTime = ofGetElapsedTimeMillis();
       nextTransactionTime = calcNextTransactionTime();
       
       // Create a transaction. 
       Transaction tx;
       confirmedTransactions.push_back(tx);
+      
+      // Print transaction.
+      tx.print(printer);
     }
   }
   

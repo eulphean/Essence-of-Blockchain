@@ -23,8 +23,8 @@ void BlockHash::setup() {
 
 void BlockHash::update(ofFbo &fbo) {
   if (miningState == Mining) {
-    // New hash.
-    createNewHash();
+    // Create new hash
+    hash = sha256 (ofToString(ofRandom(1000, 2000)));
     
     // Are we inside the partition time bound? Check if I can update the "hash" update partition.
     if (ofGetElapsedTimef() - lastPartitionTime > resetPartitionTime) {
@@ -107,19 +107,6 @@ void BlockHash::createCharacters() {
     c.setup(fonts[currentFontIdx], fontSize);
     characters.push_back(c);
   }
-}
-
-void BlockHash::createNewHash() {
-   // Keep pushing a new character to this vector to generate a new hash.
-  hashString.push_back('a');
-  
-  // Empty the vector when the size becomes really big.
-  if (hashString.size() > 50) {
-    hashString.clear();
-  }
-  
-  // Extract a SHA256 hash from the string.
-  hash = sha256 (ofToString(hashString));
 }
 
 void BlockHash::updateCharacterPartition() {

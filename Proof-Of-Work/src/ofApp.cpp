@@ -1,6 +1,8 @@
 #include "ofApp.h"
 #include "Types.h"
 
+// Declaring the extern mining state that gets used throughout
+// the appl by all the modules.
 State miningState = Mining;
 
 //--------------------------------------------------------------
@@ -21,7 +23,7 @@ void ofApp::setup(){
   lastMiningTime = ofGetElapsedTimef();
   
   // Initialize the printer.
-  initPrinter();
+  //initPrinter();
   
   // Setup block
   block.setup();
@@ -70,7 +72,7 @@ void ofApp::draw(){
   
   if (miningState == Mined) {
     if (engagePrinter) {
-      printBlockCreation();
+      //printBlockCreation();
     }
     
     glitch.setFx(OFXPOSTGLITCH_CUTSLIDER, false);

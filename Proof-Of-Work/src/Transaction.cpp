@@ -181,7 +181,5 @@ void Transaction::print(ESCPOS::DefaultSerialPrinter printer) {
   printer.println(currentLine);
   currentLine.clear();
   
-  printer.println("\n");
-  
   std::cout << stream.str() << endl;
 }

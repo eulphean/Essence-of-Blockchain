@@ -2,7 +2,7 @@
 <group>
 	<Mining>
 		<Frame_Rate>7</Frame_Rate>
-		<Reset_Mined_Time>5</Reset_Mined_Time>
+		<Reset_Mined_Time>3</Reset_Mined_Time>
 	</Mining>
 	<Block_Hash>
 		<Character_Spacing>19</Character_Spacing>

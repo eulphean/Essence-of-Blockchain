@@ -23,7 +23,7 @@ void ofApp::setup(){
   lastMiningTime = ofGetElapsedTimef();
   
   // Initialize the printer.
-  // initPrinter();
+  initPrinter();
   
   // Setup block
   block.setup();
@@ -96,7 +96,7 @@ void ofApp::draw(){
 //    glitch.setFx(OFXPOSTGLITCH_SLITSCAN, true);
     //glitch.setFx(OFXPOSTGLITCH_INVERT, true);
     //textGlitch.setFx(OFXPOSTGLITCH_OUTLINE, true);
-    //textGlitch.setFx(OFXPOSTGLITCH_GLOW, false);
+    glitch.setFx(OFXPOSTGLITCH_GLOW, false);
   }
   
   if (miningState == Mined) {
@@ -106,7 +106,7 @@ void ofApp::draw(){
     glitch.setFx(OFXPOSTGLITCH_CONVERGENCE, true);
     //glitch.setFx(OFXPOSTGLITCH_INVERT, false);
     //textGlitch.setFx(OFXPOSTGLITCH_OUTLINE, false);
-    //textGlitch.setFx(OFXPOSTGLITCH_GLOW, true);
+    glitch.setFx(OFXPOSTGLITCH_GLOW, true);
   }
   
   /* Apply effects */

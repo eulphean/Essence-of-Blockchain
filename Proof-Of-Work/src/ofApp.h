@@ -36,7 +36,7 @@ class ofApp : public ofBaseApp{
     // Text glitch. 
     ofxPostGlitch glitch;
   
-    unsigned long int resetMiningTime = 3; // This is randomly between 5-10 seconds right now.
+    unsigned long int resetMiningTime = 10; // This is randomly between 5-10 seconds right now.
                               // In reality, it's around 15-20 seconds.
     unsigned long int lastMiningTime;
     unsigned long int lastMinedTime;

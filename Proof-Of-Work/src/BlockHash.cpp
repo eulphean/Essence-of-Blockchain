@@ -77,7 +77,7 @@ void BlockHash::print(ESCPOS::DefaultSerialPrinter printer) {
   std::stringstream stream;
   
   // Line 0 - Time
-  printer.setInvert(false);
+  printer.setInvert(true);
   printer.setAlign(ESCPOS::BaseCodes::ALIGN_CENTER);
   std::time_t currentTime = std::time(NULL);
   string s = std::ctime(&currentTime);
@@ -114,12 +114,10 @@ void BlockHash::print(ESCPOS::DefaultSerialPrinter printer) {
   // Line 36
   stream << printBoundingSection(printer, '+') << endl;
   
-  printer.println("\n");
-  
   std::cout << stream.str() << endl;
   
   // Send a cut command.
-  printer.println("Live life like a king!");
+  printer.println("Chill life ~ Chill beats.");
   printer.cut(ESCPOS::BaseCodes::CUT_FULL);
 }
 
@@ -212,7 +210,7 @@ void BlockHash::updateHashFbo(ofFbo &fbo) {
     if (miningState == Mined) {
       ofBackground(ofColor::red);
     } else {
-      ofBackground(ofColor::black);
+      ofBackground(ofColor::red);
     }
   
     // Draw every single character from the hash.

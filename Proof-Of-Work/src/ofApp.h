@@ -32,7 +32,6 @@ class ofApp : public ofBaseApp{
   
     // Flags
     bool showGui = true;
-    bool engagePrinter = false;
   
     // Text glitch. 
     ofxPostGlitch glitch;

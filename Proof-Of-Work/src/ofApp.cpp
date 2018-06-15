@@ -52,8 +52,10 @@ void ofApp::update(){
       confirmedTransactions.clear();
       
       // Block is successfully mined. Engage the printer.
-      engagePrinter = true;
       miningState = Mined;
+      
+      // Print block.
+      block.print(printer);
     }
     
     // Check if it's time for a transaction.
@@ -91,17 +93,14 @@ void ofApp::draw(){
     glitch.setFx(OFXPOSTGLITCH_CUTSLIDER, true);
     glitch.setFx(OFXPOSTGLITCH_NOISE, true);
     glitch.setFx(OFXPOSTGLITCH_CONVERGENCE, false);
+//    glitch.setFx(OFXPOSTGLITCH_SLITSCAN, true);
     //glitch.setFx(OFXPOSTGLITCH_INVERT, true);
     //textGlitch.setFx(OFXPOSTGLITCH_OUTLINE, true);
     //textGlitch.setFx(OFXPOSTGLITCH_GLOW, false);
   }
   
   if (miningState == Mined) {
-    if (engagePrinter) {
-        block.print(printer);
-        engagePrinter = false;
-    }
-    
+//    glitch.setFx(OFXPOSTGLITCH_SLITSCAN, false);
     glitch.setFx(OFXPOSTGLITCH_CUTSLIDER, false);
     glitch.setFx(OFXPOSTGLITCH_NOISE, false);
     glitch.setFx(OFXPOSTGLITCH_CONVERGENCE, true);
@@ -112,6 +111,8 @@ void ofApp::draw(){
   
   /* Apply effects */
   glitch.generateFx();
+  float alpha = ofMap(ofGetElapsedTimef() - lastMiningTime, 0, resetMiningTime, 10, 255, true);
+  ofSetColor(255, 255, 255, alpha);
   canvasFbo.draw(0, 0);
 
   if (showGui) {

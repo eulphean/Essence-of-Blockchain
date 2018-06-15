@@ -209,7 +209,12 @@ void BlockHash::updateCharacterPartition() {
 
 void BlockHash::updateHashFbo(ofFbo &fbo) {
   fbo.begin();
-    ofBackground(ofColor::black);
+    if (miningState == Mined) {
+      ofBackground(ofColor::red);
+    } else {
+      ofBackground(ofColor::black);
+    }
+  
     // Draw every single character from the hash.
     int idx = 2;
     int curX = 0;

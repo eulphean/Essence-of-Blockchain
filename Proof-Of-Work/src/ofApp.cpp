@@ -23,10 +23,14 @@ void ofApp::setup(){
   lastMiningTime = ofGetElapsedTimef();
   
   // Initialize the printer.
-  //initPrinter();
+  // initPrinter();
   
   // Setup block
   block.setup();
+  
+  // Calculate time for the first transaction to occur.
+  nextTransactionTime = calcNextTransactionTime(); // In 2 - 5 seconds, first transaction happens.
+  lastTransactionTime = ofGetElapsedTimeMillis();
 }
 
 //--------------------------------------------------------------
@@ -38,23 +42,48 @@ void ofApp::update(){
   
   // Track mining state.
   if (miningState == Mining) {  
+    
     // Mining done? Update state to mined.
     if (ofGetElapsedTimef() - lastMiningTime > resetMiningTime) {
       lastMinedTime = ofGetElapsedTimef(); // Start tracking mined time.
-      cout << "Successfully mined." << endl;
+      block.updateCharacterPartition(); // All the characters should update now.
+      
+      std::cout << "Successfully mined." << endl;
+      std::cout << "Total transactions: " << confirmedTransactions.size() << endl;
+      
+      // Clear previous transactions, get ready for the next block.
+      confirmedTransactions.clear();
+      
+      // Block is successfully mined. Engage the printer.
+      engagePrinter = true;
       miningState = Mined;
-      block.updateCharacterPartition(); // All the characters should update now. 
-      engagePrinter = true; // Block is successfully mined. Engage the printer.
+    }
+    
+    // Check if it's time for a transaction.
+    if (ofGetElapsedTimeMillis() - lastTransactionTime > nextTransactionTime) {
+      // Reset transaction times.
+      std::cout << "Creating a transaction: " << nextTransactionTime << endl;
+      
+      lastTransactionTime = ofGetElapsedTimeMillis();
+      nextTransactionTime = calcNextTransactionTime();
+      
+      // Create a transaction. 
+      Transaction tx;
+      confirmedTransactions.push_back(tx);
     }
   }
   
   if (miningState == Mined) {
     // Mined visualization done? Update state to mining.
     if (ofGetElapsedTimef() - lastMinedTime > resetMinedTime) {
-      resetMiningTime = ofRandom(10, 15); // Calculate a new random mining time.
+      resetMiningTime = ofRandom(15, 25); // Calculate a new random mining time.
       lastMiningTime = ofGetElapsedTimef(); // Start tracking mining time.
-      cout << "Beginning mining." << endl;
       miningState = Mining;
+      std::cout << "Beginning mining." << endl;
+      
+      // Reset transaction times.
+      lastTransactionTime = ofGetElapsedTimef();
+      nextTransactionTime = calcNextTransactionTime();
     }
   }
 }
@@ -90,6 +119,10 @@ void ofApp::draw(){
   if (showGui) {
     gui.draw();
   }
+}
+
+int ofApp::calcNextTransactionTime() {
+  return ofRandom(100, 1200); // Milliseconds
 }
 
 void ofApp::initPrinter() {

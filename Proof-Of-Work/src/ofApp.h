@@ -6,6 +6,7 @@
 #include "ofxPostGlitch.h"
 #include "ofxESCPOS.h"
 #include "BlockHash.h"
+#include "Transaction.h"
 
 using namespace ofx;
 
@@ -18,6 +19,7 @@ class ofApp : public ofBaseApp{
     void keyPressed(int key);
     void keyReleased(int key);
   
+    int calcNextTransactionTime();
     void initPrinter();
     void printBlockCreation();
     void exit();
@@ -36,16 +38,21 @@ class ofApp : public ofBaseApp{
     // Text glitch. 
     ofxPostGlitch glitch;
   
-    long int resetMiningTime = 5; // This is randomly between 5-10 seconds right now.
+    unsigned long int resetMiningTime = 3; // This is randomly between 5-10 seconds right now.
                               // In reality, it's around 15-20 seconds.
-    long int lastMiningTime;
-    long int lastMinedTime;
+    unsigned long int lastMiningTime;
+    unsigned long int lastMinedTime;
   
     // Thermal printer.
     ESCPOS::DefaultSerialPrinter printer;
   
     // Block
     BlockHash block;
+  
+    // Transaction (Track time in milliseconds because we need higher precision)
+    vector<Transaction> confirmedTransactions;
+    unsigned long nextTransactionTime; // (ms) Randomly decide this after every confirmed transaction
+    unsigned long lastTransactionTime;
   
     // App-level fbo
     ofFbo canvasFbo;

@@ -36,62 +36,134 @@ void BlockHash::update(ofFbo &fbo) {
   
   updateHashFbo(fbo);
 }
+// Time
+//+-----------------------------------------------------+
+//O-----------------------------------------------------o
+//                        5129
+//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
+//                        732D
+//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
+//                        C7DF
+//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
+//                        D94C
+//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
+//                        F449
+//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
+//                        C0B5
+//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
+//                        61E4
+//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
+//                        BFD8
+//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
+//                        5808
+//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
+//                        AD69
+//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
+//                        4D59
+//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
+//                        D33F
+//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
+//                        4F16
+//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
+//                        D3F0
+//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
+//                        A35E
+//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
+//                        C1F2
+//+-----------------------------------------------------+
+//o-----------------------------------------------------o
 
 void BlockHash::print(ESCPOS::DefaultSerialPrinter printer) {
-  // Pre-hash.
-  printer.setDefaultLineSpacing();
-  printer.setInvert(true);
-  string preString;
-  for (int i = 0; i < 48; i++) {
-    preString+='#';
-  }
-  printer.println(ofToString(preString));
-
-  preString.clear();
-  for (int i = 0; i < 48; i++) {
-    preString+='|';
-  }
-  printer.println(ofToString(preString));
-
-  preString.clear();
-  for (int i = 0; i < 48; i++) {
-    preString+='%';
-  }
-  printer.println(ofToString(preString));
-
-  // Actual hash.
+  std::stringstream stream;
+  
+  // Line 0 - Time
   printer.setInvert(false);
-  printer.setLineSpacing(0);
-  printer.println("0x" + ofToUpper(hash));
-
-  // Post-hash.
-  printer.setInvert(true);
-  printer.setDefaultLineSpacing();
-
-  string postString;
-  for (int i = 0; i < 48; i++) {
-    postString+='-';
+  printer.setAlign(ESCPOS::BaseCodes::ALIGN_CENTER);
+  std::time_t currentTime = std::time(NULL);
+  string s = std::ctime(&currentTime);
+  string currentLine = s.substr(0, s.size() - 1);
+  
+  stream << currentLine << endl;
+  printer.println(currentLine);
+  
+  // Line 1
+  stream << printBoundingSection(printer, '+') << endl;
+  
+  // Line 2
+  stream << printBoundingSection(printer, 'o') << endl;
+  
+  // Line 3 - 34
+  int start = 0; int end = 4; int idx = 0;
+  for (int i = 0; i < 31; i++) {
+    if (i % 2 == 0) {
+      stream << printHash(printer, start, end) << endl;
+      start += 4; end += 4;
+    } else {
+      if (idx % 2 == 0) {
+        stream << printInbetween(printer, 'x') << endl;
+      } else {
+        stream << printInbetween(printer, ':') << endl;
+      }
+      idx++;
+    }
   }
-  printer.println(postString);
-
-  postString.clear();
-  for (int i = 0; i < 48; i++) {
-    postString+=':';
-  }
-  printer.println(postString);
-
-  postString.clear();
-  for (int i = 0; i < 48; i++) {
-    postString+='.';
-  }
-  printer.println(postString);
-
+  
+  // Line 35
+  stream << printBoundingSection(printer, 'o') << endl;
+  
+  // Line 36
+  stream << printBoundingSection(printer, '+') << endl;
+  
   printer.println("\n");
   
+  std::cout << stream.str() << endl;
+  
   // Send a cut command.
-  printer.cut(ESCPOS::BaseCodes::CUT_FULL);
   printer.println("Live life like a king!");
-  std::cout << "Full cut" << endl;
+  printer.cut(ESCPOS::BaseCodes::CUT_FULL);
+}
+
+string BlockHash::printBoundingSection(ESCPOS::DefaultSerialPrinter printer, char c) {
+  printer.setInvert(false);
+  printer.setAlign(ESCPOS::BaseCodes::ALIGN_LEFT);
+  
+  string currentLine = ofToString(c);
+  for (int i = 0; i < 46; i++) {
+    currentLine += '-';
+  }
+  currentLine += c;
+  
+  printer.println(currentLine);
+  return currentLine;
+}
+
+string BlockHash::printHash(ESCPOS::DefaultSerialPrinter printer, int start, int end) {
+  printer.setInvert(true);
+  printer.setAlign(ESCPOS::BaseCodes::ALIGN_CENTER);
+  
+  string currentLine;
+  for (int i = start; i < end; i++) {
+    currentLine += hash[i];
+  }
+  
+  printer.println(currentLine);
+  return currentLine;
+}
+
+string BlockHash::printInbetween(ESCPOS::DefaultSerialPrinter printer, char c) {
+  printer.setInvert(false);
+  printer.setAlign(ESCPOS::BaseCodes::ALIGN_LEFT);
+  
+  string currentLine;
+  for (int i = 0; i < 48; i++) {
+    if (i % 2 == 0) {
+      currentLine += c;
+    } else {
+      currentLine += '-';
+    }
+  }
+  printer.println(currentLine);
+  return currentLine;
 }
 
 void BlockHash::updateFromGui(int & val) {

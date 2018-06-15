@@ -29,6 +29,11 @@ class BlockHash {
     void cycleFont(bool forward);
   
   private:
+    // Printing functions.
+    string printBoundingSection(ESCPOS::DefaultSerialPrinter printer, char c);
+    string printHash(ESCPOS::DefaultSerialPrinter printer, int start, int end);
+    string printInbetween(ESCPOS::DefaultSerialPrinter printer, char c);
+  
     void updateFromGui(int & val);
     void createCharacters();
     void updateHashFbo(ofFbo &fbo);

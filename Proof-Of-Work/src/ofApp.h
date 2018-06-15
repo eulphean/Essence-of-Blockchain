@@ -21,7 +21,6 @@ class ofApp : public ofBaseApp{
   
     int calcNextTransactionTime();
     void initPrinter();
-    void printBlockCreation();
     void exit();
   
   private:  

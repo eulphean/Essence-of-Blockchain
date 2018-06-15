@@ -101,7 +101,8 @@ void ofApp::draw(){
   
   if (miningState == Mined) {
     if (engagePrinter) {
-      //printBlockCreation();
+        block.print(printer);
+        engagePrinter = false;
     }
     
     glitch.setFx(OFXPOSTGLITCH_CUTSLIDER, false);
@@ -158,60 +159,6 @@ void ofApp::initPrinter() {
                              ESCPOS::BaseCodes::MAGNIFICATION_1X);
     printer.setUpsideDown(true);
     printer.setAlign(ESCPOS::BaseCodes::ALIGN_LEFT);
-}
-
-void ofApp::printBlockCreation() {
-    // Pre-hash.
-    printer.setDefaultLineSpacing();
-    printer.setInvert(true);
-    string preString;
-    for (int i = 0; i < 48; i++) {
-      preString+='#';
-    }
-    printer.println(ofToString(preString));
-  
-    preString.clear();
-    for (int i = 0; i < 48; i++) {
-      preString+='|';
-    }
-    printer.println(ofToString(preString));
-  
-    preString.clear();
-    for (int i = 0; i < 48; i++) {
-      preString+='%';
-    }
-    printer.println(ofToString(preString));
-  
-    // Actual hash.
-    printer.setInvert(false);
-    printer.setLineSpacing(0);
-    printer.println("0x" + ofToUpper(block.getHash()));
-  
-    // Post-hash.
-    printer.setInvert(true);
-    printer.setDefaultLineSpacing();
-  
-    string postString;
-    for (int i = 0; i < 48; i++) {
-      postString+='-';
-    }
-    printer.println(postString);
-  
-    postString.clear();
-    for (int i = 0; i < 48; i++) {
-      postString+=':';
-    }
-    printer.println(postString);
-  
-    postString.clear();
-    for (int i = 0; i < 48; i++) {
-      postString+='.';
-    }
-    printer.println(postString);
-  
-    printer.println("\n");
-  
-    engagePrinter = false;
 }
 
 void ofApp::keyPressed(int key) {

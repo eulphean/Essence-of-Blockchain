@@ -6,11 +6,15 @@
 #include "Character.h"
 #include "Types.h"
 #include "sha256.h"
+#include "ofxESCPOS.h"
+
+using namespace ofx;
 
 class BlockHash {
   public:
     void setup();
     void update(ofFbo &fbo);
+    void print(ESCPOS::DefaultSerialPrinter); // Prints the Blockchain.
   
     // GUI parameters.
     ofParameter<float> characterSpacing { "Character Spacing", 10.0, 5.0, 50.0 };
@@ -21,7 +25,6 @@ class BlockHash {
     // GUI group.
     ofParameterGroup parameters { "Block Hash", characterSpacing, partitionSize, xPosition, fontSize };
   
-    string getHash();
     void updateCharacterPartition();
     void cycleFont(bool forward);
   

@@ -37,6 +37,63 @@ void BlockHash::update(ofFbo &fbo) {
   updateHashFbo(fbo);
 }
 
+void BlockHash::print(ESCPOS::DefaultSerialPrinter printer) {
+  // Pre-hash.
+  printer.setDefaultLineSpacing();
+  printer.setInvert(true);
+  string preString;
+  for (int i = 0; i < 48; i++) {
+    preString+='#';
+  }
+  printer.println(ofToString(preString));
+
+  preString.clear();
+  for (int i = 0; i < 48; i++) {
+    preString+='|';
+  }
+  printer.println(ofToString(preString));
+
+  preString.clear();
+  for (int i = 0; i < 48; i++) {
+    preString+='%';
+  }
+  printer.println(ofToString(preString));
+
+  // Actual hash.
+  printer.setInvert(false);
+  printer.setLineSpacing(0);
+  printer.println("0x" + ofToUpper(hash));
+
+  // Post-hash.
+  printer.setInvert(true);
+  printer.setDefaultLineSpacing();
+
+  string postString;
+  for (int i = 0; i < 48; i++) {
+    postString+='-';
+  }
+  printer.println(postString);
+
+  postString.clear();
+  for (int i = 0; i < 48; i++) {
+    postString+=':';
+  }
+  printer.println(postString);
+
+  postString.clear();
+  for (int i = 0; i < 48; i++) {
+    postString+='.';
+  }
+  printer.println(postString);
+
+  printer.println("\n");
+  
+  // Send a cut command.
+  printer.cut(ESCPOS::BaseCodes::CUT_FULL);
+  printer.println("Live life like a king!");
+  std::cout << "Full cut" << endl;
+}
+
 void BlockHash::updateFromGui(int & val) {
   createCharacters();
 }
@@ -117,9 +174,6 @@ void BlockHash::updateHashFbo(ofFbo &fbo) {
   fbo.end();
 }
 
-string BlockHash::getHash() {
-  return hash;
-}
 
 void BlockHash::cycleFont(bool forward) {
   if (forward) {

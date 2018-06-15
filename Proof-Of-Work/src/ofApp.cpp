@@ -48,9 +48,6 @@ void ofApp::update(){
       lastMinedTime = ofGetElapsedTimef(); // Start tracking mined time.
       block.updateCharacterPartition(); // All the characters should update now.
       
-      std::cout << "Successfully mined." << endl;
-      std::cout << "Total transactions: " << confirmedTransactions.size() << endl;
-      
       // Clear previous transactions, get ready for the next block.
       confirmedTransactions.clear();
       
@@ -80,7 +77,6 @@ void ofApp::update(){
       resetMiningTime = ofRandom(15, 25); // Calculate a new random mining time.
       lastMiningTime = ofGetElapsedTimef(); // Start tracking mining time.
       miningState = Mining;
-      std::cout << "Beginning mining." << endl;
       
       // Reset transaction times.
       lastTransactionTime = ofGetElapsedTimef();
@@ -95,7 +91,7 @@ void ofApp::draw(){
     glitch.setFx(OFXPOSTGLITCH_CUTSLIDER, true);
     glitch.setFx(OFXPOSTGLITCH_NOISE, true);
     glitch.setFx(OFXPOSTGLITCH_CONVERGENCE, false);
-    glitch.setFx(OFXPOSTGLITCH_INVERT, true);
+    //glitch.setFx(OFXPOSTGLITCH_INVERT, true);
     //textGlitch.setFx(OFXPOSTGLITCH_OUTLINE, true);
     //textGlitch.setFx(OFXPOSTGLITCH_GLOW, false);
   }
@@ -109,7 +105,7 @@ void ofApp::draw(){
     glitch.setFx(OFXPOSTGLITCH_CUTSLIDER, false);
     glitch.setFx(OFXPOSTGLITCH_NOISE, false);
     glitch.setFx(OFXPOSTGLITCH_CONVERGENCE, true);
-    glitch.setFx(OFXPOSTGLITCH_INVERT, false);
+    //glitch.setFx(OFXPOSTGLITCH_INVERT, false);
     //textGlitch.setFx(OFXPOSTGLITCH_OUTLINE, false);
     //textGlitch.setFx(OFXPOSTGLITCH_GLOW, true);
   }

@@ -209,7 +209,7 @@ void BlockHash::updateCharacterPartition() {
 
 void BlockHash::updateHashFbo(ofFbo &fbo) {
   fbo.begin();
-    ofBackground(ofColor::red);
+    ofBackground(ofColor::black);
     // Draw every single character from the hash.
     int idx = 2;
     int curX = 0;
@@ -232,7 +232,6 @@ void BlockHash::updateHashFbo(ofFbo &fbo) {
     ofPopMatrix();
   fbo.end();
 }
-
 
 void BlockHash::cycleFont(bool forward) {
   if (forward) {

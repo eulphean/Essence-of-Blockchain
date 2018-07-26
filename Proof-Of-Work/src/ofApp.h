@@ -23,12 +23,16 @@ class ofApp : public ofBaseApp{
     void initPrinter();
     void exit();
   
-  private:  
+  private:
+    void printBoundingSection(char c);
+  
     // GUI
     ofxPanel gui;
     ofParameter<int> frameRate { "Frame Rate", 5, 1, 60 };
     ofParameter<int> resetMinedTime { "Reset Mined Time", 3, 1, 20 }; // Time we want to hold before we start mining again.
     ofParameterGroup appParameters { "Mining", frameRate, resetMinedTime };
+  
+    ofImage bgImage;
   
     // Flags
     bool showGui = true;

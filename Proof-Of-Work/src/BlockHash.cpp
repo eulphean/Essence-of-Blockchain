@@ -21,7 +21,7 @@ void BlockHash::setup() {
   lastPartitionTime = ofGetElapsedTimef();
 }
 
-void BlockHash::update(ofFbo &fbo) {
+void BlockHash::update(ofFbo &fbo, ofImage &img) {
   if (miningState == Mining) {
     // Create new hash
     hash = sha256 (ofToString(ofRandom(1000, 2000)));
@@ -34,108 +34,60 @@ void BlockHash::update(ofFbo &fbo) {
     }
   }
   
-  updateHashFbo(fbo);
+  updateHashFbo(fbo, img);
 }
 // Time
-//+-----------------------------------------------------+
-//O-----------------------------------------------------o
-//                        5129
-//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
-//                        732D
-//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
-//                        C7DF
-//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
-//                        D94C
-//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
-//                        F449
-//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
-//                        C0B5
-//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
-//                        61E4
-//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
-//                        BFD8
-//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
-//                        5808
-//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
-//                        AD69
-//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
-//                        4D59
-//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
-//                        D33F
-//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
-//                        4F16
-//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
-//                        D3F0
-//:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
-//                        A35E
-//x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
-//                        C1F2
-//+-----------------------------------------------------+
-//o-----------------------------------------------------o
-
+// 5129732DC7DFD94CF449C0B561E4BFD8
+// 5808AD694D59D33F4F16D3F0A35EC1F2
 void BlockHash::print(ESCPOS::DefaultSerialPrinter printer) {
   std::stringstream stream;
   
-  // Line 0 - Time
+  // Some bounding to declare a block.
+  for (int i = 0; i < 2; i++) {
+    stream << printBoundingSection(printer, 'o') << endl;
+  }
+  
+  // Print current time.
   printer.setInvert(true);
   printer.setAlign(ESCPOS::BaseCodes::ALIGN_CENTER);
+  
   std::time_t currentTime = std::time(NULL);
   string s = std::ctime(&currentTime);
   string currentLine = s.substr(0, s.size() - 1);
-  
   stream << currentLine << endl;
   printer.println(currentLine);
   
-  // Line 1
-  stream << printBoundingSection(printer, '+') << endl;
+  // Print block address.
+  currentLine = printAddress(printer, 0, 32);
+  stream << currentLine << endl;
+  currentLine = printAddress(printer, 32, 64);
+  stream << currentLine << endl;
   
-  // Line 2
-  stream << printBoundingSection(printer, 'o') << endl;
-  
-  // Line 3 - 34
-  int start = 0; int end = 4; int idx = 0;
-  for (int i = 0; i < 31; i++) {
-    if (i % 2 == 0) {
-      stream << printHash(printer, start, end) << endl;
-      start += 4; end += 4;
-    } else {
-      if (idx % 2 == 0) {
-        stream << printInbetween(printer, 'x') << endl;
-      } else {
-        stream << printInbetween(printer, ':') << endl;
-      }
-      idx++;
-    }
+  // Some bounding to declare block.
+  for (int i = 0; i < 2; i++) {
+    stream << printBoundingSection(printer, 'o') << endl;
   }
   
-  // Line 35
-  stream << printBoundingSection(printer, 'o') << endl;
-  
-  // Line 36
-  stream << printBoundingSection(printer, '+') << endl;
-  
   std::cout << stream.str() << endl;
-  
-  // Send a cut command.
-  printer.println("Chill life ~ Chill beats.");
-  printer.cut(ESCPOS::BaseCodes::CUT_FULL);
 }
 
 string BlockHash::printBoundingSection(ESCPOS::DefaultSerialPrinter printer, char c) {
   printer.setInvert(false);
   printer.setAlign(ESCPOS::BaseCodes::ALIGN_LEFT);
-  
-  string currentLine = ofToString(c);
-  for (int i = 0; i < 46; i++) {
-    currentLine += '-';
+
+  string currentLine;
+  for (int i = 0; i < 48; i++) {
+    if (i % 2 == 0) {
+      currentLine += c;
+    } else {
+      currentLine += '-';
+    }
   }
-  currentLine += c;
-  
   printer.println(currentLine);
   return currentLine;
 }
 
-string BlockHash::printHash(ESCPOS::DefaultSerialPrinter printer, int start, int end) {
+string BlockHash::printAddress(ESCPOS::DefaultSerialPrinter printer, int start, int end) {
   printer.setInvert(true);
   printer.setAlign(ESCPOS::BaseCodes::ALIGN_CENTER);
   
@@ -148,21 +100,21 @@ string BlockHash::printHash(ESCPOS::DefaultSerialPrinter printer, int start, int
   return currentLine;
 }
 
-string BlockHash::printInbetween(ESCPOS::DefaultSerialPrinter printer, char c) {
-  printer.setInvert(false);
-  printer.setAlign(ESCPOS::BaseCodes::ALIGN_LEFT);
-  
-  string currentLine;
-  for (int i = 0; i < 48; i++) {
-    if (i % 2 == 0) {
-      currentLine += c;
-    } else {
-      currentLine += '-';
-    }
-  }
-  printer.println(currentLine);
-  return currentLine;
-}
+//string BlockHash::printInbetween(ESCPOS::DefaultSerialPrinter printer, char c) {
+//  printer.setInvert(false);
+//  printer.setAlign(ESCPOS::BaseCodes::ALIGN_LEFT);
+//
+//  string currentLine;
+//  for (int i = 0; i < 48; i++) {
+//    if (i % 2 == 0) {
+//      currentLine += c;
+//    } else {
+//      currentLine += '-';
+//    }
+//  }
+//  printer.println(currentLine);
+//  return currentLine;
+//}
 
 void BlockHash::updateFromGui(int & val) {
   createCharacters();
@@ -205,14 +157,9 @@ void BlockHash::updateCharacterPartition() {
   }
 }
 
-void BlockHash::updateHashFbo(ofFbo &fbo) {
+void BlockHash::updateHashFbo(ofFbo &fbo, ofImage &img) {
   fbo.begin();
-    if (miningState == Mined) {
-      ofBackground(ofColor::red);
-    } else {
-      ofBackground(ofColor::red);
-    }
-  
+    img.draw(0, 0);
     // Draw every single character from the hash.
     int idx = 2;
     int curX = 0;

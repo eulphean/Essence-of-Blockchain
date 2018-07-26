@@ -14,6 +14,7 @@ class Transaction {
     std::time_t currentTime; // Time this transaction was created.
     
   private:
+    string printAddress(ESCPOS::DefaultSerialPrinter printer, int start, int end);
     // Hash generator
     SHA256 sha256; // SHA-256 utility to generate hashes.
 };

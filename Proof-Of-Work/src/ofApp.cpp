@@ -9,6 +9,9 @@ State miningState = Mining;
 void ofApp::setup(){
   ofBackground(ofColor::black);
   
+  // Load background image.
+  bgImage.load("wall.jpg");
+  
   // Setup GUI.
   gui.setup();
   gui.add(appParameters);
@@ -17,6 +20,7 @@ void ofApp::setup(){
   
   // Fbo to draw the text in.
   canvasFbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+  
   glitch.setup(&canvasFbo);
   
   // Mining tracker.
@@ -31,6 +35,10 @@ void ofApp::setup(){
   // Calculate time for the first transaction to occur.
   nextTransactionTime = calcNextTransactionTime(); // In 2 - 5 seconds, first transaction happens.
   lastTransactionTime = ofGetElapsedTimeMillis();
+  
+  // Start the first section for the block.
+  printer.cut(ESCPOS::BaseCodes::CUT_FULL);
+  printBoundingSection('x');
 }
 
 //--------------------------------------------------------------
@@ -38,7 +46,7 @@ void ofApp::update(){
   ofSetFrameRate(frameRate);
   
   // Update block
-  block.update(canvasFbo);
+  block.update(canvasFbo, bgImage);
   
   // Track mining state.
   if (miningState == Mining) {  
@@ -56,6 +64,9 @@ void ofApp::update(){
       
       // Print block.
       block.print(printer);
+      // End the block.
+      printBoundingSection('x');
+      printer.cut(ESCPOS::BaseCodes::CUT_FULL);
     }
     
     // Check if it's time for a transaction.
@@ -83,6 +94,9 @@ void ofApp::update(){
       // Reset transaction times.
       lastTransactionTime = ofGetElapsedTimef();
       nextTransactionTime = calcNextTransactionTime();
+      
+      // Start a new block.
+      printBoundingSection('x');
     }
   }
 }
@@ -157,6 +171,21 @@ void ofApp::initPrinter() {
                              ESCPOS::BaseCodes::MAGNIFICATION_1X);
     printer.setUpsideDown(true);
     printer.setAlign(ESCPOS::BaseCodes::ALIGN_LEFT);
+}
+
+void ofApp::printBoundingSection(char c) {
+  printer.setInvert(false);
+  printer.setAlign(ESCPOS::BaseCodes::ALIGN_LEFT);
+  
+  string currentLine = ofToString(c);
+  for (int i = 0; i < 46; i++) {
+    currentLine += '-';
+  }
+  currentLine += c;
+  
+  printer.println(currentLine);
+  return currentLine;
+
 }
 
 void ofApp::keyPressed(int key) {

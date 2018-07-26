@@ -13,7 +13,7 @@ using namespace ofx;
 class BlockHash {
   public:
     void setup();
-    void update(ofFbo &fbo);
+    void update(ofFbo &fbo, ofImage &img);
     void print(ESCPOS::DefaultSerialPrinter printer); // Prints the Blockchain.
   
     // GUI parameters.
@@ -31,12 +31,11 @@ class BlockHash {
   private:
     // Printing functions.
     string printBoundingSection(ESCPOS::DefaultSerialPrinter printer, char c);
-    string printHash(ESCPOS::DefaultSerialPrinter printer, int start, int end);
-    string printInbetween(ESCPOS::DefaultSerialPrinter printer, char c);
+    string printAddress(ESCPOS::DefaultSerialPrinter printer, int start, int end);
   
     void updateFromGui(int & val);
     void createCharacters();
-    void updateHashFbo(ofFbo &fbo);
+    void updateHashFbo(ofFbo &fbo, ofImage &img);
     
     // Fonts
     std::vector<string> fonts;

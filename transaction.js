@@ -4,7 +4,7 @@
 
 var Tx = require('ethereumjs-tx');
 const Web3 = require('web3');
-const web3 = new Web3('https://mainnet.infura.io/v3/24b152bca7704bf39741eed185972f92');
+const web3 = new Web3('https://ropsten.infura.io/v3/24b152bca7704bf39741eed185972f92');
 
 const account1 = '0x50f8be0A651a5F930c460BF7675fa0493F087967';
 const account2 = '0x4Ae52740cB65c23e2634B3aFfBeb9f090f852Ebe';
@@ -32,8 +32,14 @@ web3.eth.getTransactionCount(account1, (err, txCount) => {
     const raw = '0x' + serializedTransaction.toString('hex');
 
     // Broadcast the transaction
-    web3.eth.sendSignedTransaction(raw, (err, txHash) => {
+    web3.eth.sendSignedTransaction(raw)
+    .once('transactionHash', (hash) => {
+        console.log(hash);
+    })
+    .on('error', (err) => {
         console.log(err);
-        console.log('Transaction:', txHash);
+    })
+    .then(receipt => {
+        console.log(receipt);
     });
 });
